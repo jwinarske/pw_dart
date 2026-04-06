@@ -29,6 +29,8 @@ set(PW_DART_SOURCES
     event_serializer.cpp
     param_handler.cpp
     link_manager.cpp
+
+    dart_api_dl.cpp
 )
 
 set(PW_DART_HEADERS
@@ -39,6 +41,7 @@ set(PW_DART_HEADERS
     event_serializer.hpp
     param_handler.hpp
     link_manager.hpp
+    dart_api_dl.h
 )
 
 # --- Shared library target ---
