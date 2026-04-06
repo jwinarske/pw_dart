@@ -1,0 +1,24 @@
+name: pw_dart
+description: First-class PipeWire bindings for Dart/Flutter via C++23 native code and dart:ffi.
+version: 0.0.1
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.7.0
+
+platforms:
+  linux:
+
+dependencies:
+  ffi: ^2.1.0
+  json_annotation: ^4.9.0
+  meta: ^1.12.0
+
+dev_dependencies:
+  test: ^1.25.0
+  lints: ^5.1.0
+  mockito: ^5.4.0
+  build_runner: ^2.4.0
+
