@@ -7,6 +7,7 @@
 #include "link_manager.hpp"
 
 #include <pipewire/pipewire.h>
+#include <spa/utils/hook.h>
 #include <spa/utils/result.h>
 
 #include <cstring>
@@ -141,35 +142,55 @@ void PwDartClientImpl::disconnect() {
 
     connected_.store(false, std::memory_order_release);
 
-    // Signal the loop to quit
+    // Ask the loop to quit. PipeWire APIs are not thread-safe, so we must
+    // schedule pw_main_loop_quit() onto the loop thread itself via
+    // pw_loop_invoke() rather than calling it directly from this thread.
     if (loop_) {
-        pw_main_loop_quit(loop_);
+        pw_loop_invoke(
+            pw_main_loop_get_loop(loop_),
+            [](spa_loop*, bool, uint32_t, const void*, size_t, void* data) -> int {
+                pw_main_loop_quit(static_cast<pw_main_loop*>(data));
+                return 0;
+            },
+            0, nullptr, 0, false, loop_);
     }
 
-    // Request thread stop and wait
+    // Wait for the loop thread to exit pw_main_loop_run(). After this point
+    // the loop thread is gone and it is safe to call PipeWire APIs from this
+    // thread again.
     if (loop_thread_.joinable()) {
         loop_thread_.request_stop();
         loop_thread_.join();
     }
 
-    // Destroy sub-components first
+    // Tear down sub-components first. Each one is responsible for removing
+    // its own spa_hook listeners from the proxies it owns *before* destroying
+    // those proxies (see RegistryMonitor::~RegistryMonitor).
     registry_.reset();
     params_.reset();
     links_.reset();
 
-    // Destroy PipeWire objects in reverse order
+    // The event source must be destroyed while the loop still exists.
     if (loop_event_source_ && loop_) {
         pw_loop_destroy_source(pw_main_loop_get_loop(loop_),
                                static_cast<spa_source*>(loop_event_source_));
         loop_event_source_ = nullptr;
     }
 
+    // Destroy the registry proxy before disconnecting the core.
     if (registry_pw_) {
         pw_proxy_destroy(reinterpret_cast<pw_proxy*>(registry_pw_));
         registry_pw_ = nullptr;
     }
 
-    core_listener_.reset();
+    // Detach the core listener from the core's hook list *before* freeing the
+    // hook memory. unique_ptr::reset() alone would delete the spa_hook while
+    // it is still linked, leaving a dangling node in the core's listener list
+    // and corrupting the heap when the core is disconnected.
+    if (core_listener_) {
+        spa_hook_remove(core_listener_.get());
+        core_listener_.reset();
+    }
 
     if (core_) {
         pw_core_disconnect(core_);

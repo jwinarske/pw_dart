@@ -36,8 +36,8 @@ class PwDevice {
         description: (json['description'] as String?) ?? '',
         mediaClass: (json['media_class'] as String?) ?? '',
         api: (json['api'] as String?) ?? '',
-        properties: (json['properties'] as Map<String, dynamic>?)
-                ?.map((k, v) => MapEntry(k, v.toString())) ??
+        properties: (json['properties'] as Map?)
+                ?.map((k, v) => MapEntry(k.toString(), v.toString())) ??
             const {},
       );
 

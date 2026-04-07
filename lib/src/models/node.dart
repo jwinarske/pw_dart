@@ -50,8 +50,8 @@ class PwNode {
         name: (json['name'] as String?) ?? '',
         mediaClass: (json['media_class'] as String?) ?? '',
         state: PwNodeState.fromString((json['state'] as String?) ?? 'error'),
-        properties: (json['properties'] as Map<String, dynamic>?)
-                ?.map((k, v) => MapEntry(k, v.toString())) ??
+        properties: (json['properties'] as Map?)
+                ?.map((k, v) => MapEntry(k.toString(), v.toString())) ??
             const {},
       );
 

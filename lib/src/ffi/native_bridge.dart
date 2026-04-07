@@ -21,11 +21,7 @@ class PwNativeBridge {
   Pointer<Void>? _clientHandle;
 
   PwNativeBridge({PwDartNativeBindings? bindings}) {
-    if (bindings != null) {
-      _bindings = bindings;
-    }
-    // If null, _bindings is initialized lazily on first use.
-    // Subclasses (mocks) that override all methods never touch _bindings.
+    _bindings = bindings ?? PwDartNativeBindings();
   }
 
   /// Create a bridge with explicit bindings (for production use).
@@ -139,9 +135,11 @@ class PwVersionInfo {
 
   /// Whether the runtime library is compatible with the compiled headers.
   bool get isCompatible {
-    final (hMajor, hMinor, _) = headerVersion;
-    final (lMajor, lMinor, _) = libraryVersion;
-    return lMajor == hMajor && lMinor >= hMinor;
+    final (hMajor, hMinor, hMicro) = headerVersion;
+    final (lMajor, lMinor, lMicro) = libraryVersion;
+    if (lMajor != hMajor) return false;
+    if (lMinor != hMinor) return lMinor > hMinor;
+    return lMicro >= hMicro;
   }
 
   String get headerVersionString {

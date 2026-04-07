@@ -6,6 +6,7 @@
 
 #include <pipewire/pipewire.h>
 #include <spa/utils/dict.h>
+#include <spa/utils/hook.h>
 
 #include <cstring>
 
@@ -14,6 +15,14 @@ namespace pw_dart {
 // ─── ProxyData destructor ───
 
 ProxyData::~ProxyData() {
+    // Detach our listener from the proxy's hook list before destroying the
+    // proxy. unique_ptr<spa_hook>::reset() only frees the hook memory; it
+    // does NOT call spa_hook_remove(), so without an explicit removal the
+    // proxy would still hold a dangling list node and walking its listener
+    // list (e.g. on disconnect) would corrupt the heap.
+    if (listener) {
+        spa_hook_remove(listener.get());
+    }
     if (proxy) {
         pw_proxy_destroy(proxy);
         proxy = nullptr;
@@ -109,9 +118,19 @@ RegistryMonitor::RegistryMonitor(PwDartClientImpl* client, pw_registry* registry
 }
 
 RegistryMonitor::~RegistryMonitor() {
-    // Destroy all proxies
+    // Destroy all bound proxies first. Each ProxyData destructor removes its
+    // own listener hook before calling pw_proxy_destroy.
     proxies_.clear();
-    registry_listener_.reset();
+
+    // Now detach the registry listener from the registry proxy *before*
+    // freeing the hook memory. The registry proxy itself is owned by the
+    // PwDartClientImpl and is destroyed after this monitor — if we freed the
+    // hook here without removing it, the subsequent pw_proxy_destroy on the
+    // registry would walk a dangling listener list and corrupt the heap.
+    if (registry_listener_) {
+        spa_hook_remove(registry_listener_.get());
+        registry_listener_.reset();
+    }
 }
 
 std::string RegistryMonitor::get_snapshot_json() {

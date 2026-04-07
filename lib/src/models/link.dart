@@ -69,8 +69,8 @@ class PwLink {
         state:
             PwLinkState.fromString((json['state'] as String?) ?? 'error'),
         error: (json['error'] as String?) ?? '',
-        properties: (json['properties'] as Map<String, dynamic>?)
-                ?.map((k, v) => MapEntry(k, v.toString())) ??
+        properties: (json['properties'] as Map?)
+                ?.map((k, v) => MapEntry(k.toString(), v.toString())) ??
             const {},
       );
 

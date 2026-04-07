@@ -64,8 +64,8 @@ class PwPort {
         isPhysical: (json['is_physical'] as bool?) ?? false,
         isTerminal: (json['is_terminal'] as bool?) ?? false,
         alias: (json['alias'] as String?) ?? '',
-        properties: (json['properties'] as Map<String, dynamic>?)
-                ?.map((k, v) => MapEntry(k, v.toString())) ??
+        properties: (json['properties'] as Map?)
+                ?.map((k, v) => MapEntry(k.toString(), v.toString())) ??
             const {},
       );
 
