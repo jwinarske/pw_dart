@@ -13,3 +13,12 @@ export 'src/events.dart';
 // Graph
 export 'src/graph.dart';
 
+// FFI bridge
+export 'src/ffi/native_bridge.dart' show PwNativeBridge, PwVersionInfo;
+export 'src/ffi/serialization.dart' show PwEventDeserializer;
+
+// Version
+export 'src/version.dart';
+
+// Client
+export 'src/client.dart';
