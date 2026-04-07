@@ -27,7 +27,8 @@ PwDartClient* pw_dart_connect(const char* remote_name, int64_t dart_send_port);
 /// Disconnect and free all resources. Blocks until the PW thread exits.
 void pw_dart_disconnect(PwDartClient* client);
 
-// === Graph Queries (returns JSON, caller must free with pw_dart_free_string) ===
+// === Graph Queries (returns JSON, caller must free with pw_dart_free_string)
+// ===
 
 /// Get a JSON snapshot of the entire PipeWire graph.
 /// @return JSON string (caller must free), or NULL on error.
@@ -37,7 +38,8 @@ char* pw_dart_get_graph_snapshot(PwDartClient* client);
 /// @return JSON string (caller must free), or NULL on error.
 char* pw_dart_get_node_params(PwDartClient* client, uint32_t node_id);
 
-/// Free a string returned by pw_dart_get_graph_snapshot or pw_dart_get_node_params.
+/// Free a string returned by pw_dart_get_graph_snapshot or
+/// pw_dart_get_node_params.
 void pw_dart_free_string(char* str);
 
 // === Graph Mutations ===
@@ -45,7 +47,8 @@ void pw_dart_free_string(char* str);
 /// Create a link between two ports.
 /// @return 0 on success, negative error code on failure.
 int32_t pw_dart_create_link(PwDartClient* client,
-                            uint32_t output_port_id, uint32_t input_port_id);
+                            uint32_t output_port_id,
+                            uint32_t input_port_id);
 
 /// Destroy a link by its global ID.
 /// @return 0 on success, negative error code on failure.
@@ -54,7 +57,8 @@ int32_t pw_dart_destroy_link(PwDartClient* client, uint32_t link_id);
 /// Set a node parameter. param_json is a JSON object with "key" and "value".
 /// @return 0 on success, negative error code on failure.
 int32_t pw_dart_set_node_param(PwDartClient* client,
-                               uint32_t node_id, const char* param_json);
+                               uint32_t node_id,
+                               const char* param_json);
 
 // === Version Introspection ===
 
