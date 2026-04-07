@@ -22,10 +22,8 @@ namespace pw_dart {
 // ─── PipeWire core event callbacks ───
 
 static void on_core_done(void* data, uint32_t id, int seq) {
-    // Core sync completed — used for async request tracking
-    (void)data;
-    (void)id;
-    (void)seq;
+    auto* client = static_cast<PwDartClientImpl*>(data);
+    if (client) client->on_core_done_event(id, seq);
 }
 
 static void on_core_error(void* data, uint32_t id, int seq, int res, const char* message) {
@@ -59,6 +57,12 @@ PwDartClientImpl::PwDartClientImpl(int64_t dart_send_port)
 
 PwDartClientImpl::~PwDartClientImpl() {
     disconnect();
+}
+
+void PwDartClientImpl::on_core_done_event(uint32_t id, int seq) {
+    if (id == PW_ID_CORE && seq == sync_seq_) {
+        sync_done_ = true;
+    }
 }
 
 bool PwDartClientImpl::connect(const char* remote_name) {
@@ -124,6 +128,23 @@ bool PwDartClientImpl::connect(const char* remote_name) {
     // Add event source to wake the PW loop when commands arrive
     auto* loop = pw_main_loop_get_loop(loop_);
     loop_event_source_ = pw_loop_add_event(loop, on_loop_event, this);
+
+    // Wait for the registry to settle before returning. Two synchronous
+    // round-trips:
+    //   1. flush all initial 'global' events from the server, so our
+    //      registry handler has bound a proxy for every existing object;
+    //   2. flush the per-proxy 'info' events that those binds triggered,
+    //      so our nodes_/ports_/links_/devices_ maps are fully populated.
+    // Without this, get_graph_snapshot() called immediately after connect
+    // returns a partial view that depends on whatever raced through.
+    for (int round = 0; round < 2; ++round) {
+        sync_done_ = false;
+        sync_seq_ = pw_core_sync(core_, PW_ID_CORE, 0);
+        while (!sync_done_) {
+            int res = pw_loop_iterate(loop, -1);
+            if (res < 0) break;
+        }
+    }
 
     connected_.store(true, std::memory_order_release);
 

@@ -11,6 +11,13 @@ pubspec.lock
 .vscode/
 *.iml
 
+# Flutter
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/ephemeral/
+example/graph_viewer/build/
+example/graph_viewer/.dart_tool/
+
 # Native build
 *.o
 *.so

@@ -136,6 +136,14 @@ private:
     // Loop event source for waking the PW thread when commands arrive
     // (platform-specific, initialized in connect())
     void* loop_event_source_{nullptr};
+
+    // Initial-sync state: pw_core_sync seq we're waiting for during connect.
+    int sync_seq_{0};
+    bool sync_done_{false};
+
+public:
+    // Called by the static core 'done' callback.
+    void on_core_done_event(uint32_t id, int seq);
 };
 
 }  // namespace pw_dart
