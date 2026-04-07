@@ -16,24 +16,64 @@ class PwDartNativeBindings {
   PwDartNativeBindings._(this._lib);
 
   /// Load the native library.
+  ///
+  /// Pass [libraryPath] to override the search. By default, looks for the
+  /// `.so` produced by `hook/build.dart` under `.dart_tool/hooks_runner/`,
+  /// then falls back to a local CMake build, then to the system loader.
   factory PwDartNativeBindings({String? libraryPath}) {
     final path = libraryPath ?? _defaultLibraryPath();
-    final lib = DynamicLibrary.open(path);
-    return PwDartNativeBindings._(lib);
+    return PwDartNativeBindings._(DynamicLibrary.open(path));
   }
 
+  static const _libName = 'libpw_dart_native.so';
+
   static String _defaultLibraryPath() {
-    // Search order: local build, system install
-    final candidates = [
-      'src/build/libpw_dart_native.so',
-      'build/libpw_dart_native.so',
-      '/usr/local/lib/libpw_dart_native.so',
-      'libpw_dart_native.so',
+    // 1. Most recent build produced by the package:hooks build hook. Walk up
+    //    from CWD looking for a `.dart_tool/hooks_runner/shared/pw_dart`
+    //    directory (works whether you run from the package root, the workspace
+    //    root, or anywhere in between).
+    final fromHook = _findInHooksRunner();
+    if (fromHook != null) return fromHook;
+
+    // 2. Common ad-hoc CMake build locations (e.g. when invoking cmake by hand
+    //    during native development).
+    const candidates = [
+      'src/build/$_libName',
+      'build/$_libName',
+      '/usr/local/lib/$_libName',
     ];
-    for (final path in candidates) {
-      if (File(path).existsSync()) return path;
+    for (final p in candidates) {
+      if (File(p).existsSync()) return p;
     }
-    return 'libpw_dart_native.so'; // Let dlopen search LD_LIBRARY_PATH
+
+    // 3. Last resort: let dlopen search LD_LIBRARY_PATH / system dirs.
+    return _libName;
+  }
+
+  static String? _findInHooksRunner() {
+    var dir = Directory.current;
+    for (var i = 0; i < 6; i++) {
+      final root = Directory(
+          '${dir.path}/.dart_tool/hooks_runner/shared/pw_dart/build');
+      if (root.existsSync()) {
+        File? newest;
+        DateTime newestTime = DateTime.fromMillisecondsSinceEpoch(0);
+        for (final entity in root.listSync(recursive: true)) {
+          if (entity is File && entity.path.endsWith('/$_libName')) {
+            final mtime = entity.statSync().modified;
+            if (mtime.isAfter(newestTime)) {
+              newest = entity;
+              newestTime = mtime;
+            }
+          }
+        }
+        if (newest != null) return newest.path;
+      }
+      final parent = dir.parent;
+      if (parent.path == dir.path) break;
+      dir = parent;
+    }
+    return null;
   }
 
   // === Client Lifecycle ===

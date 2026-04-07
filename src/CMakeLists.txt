@@ -49,7 +49,7 @@ add_library(pw_dart_native SHARED ${PW_DART_SOURCES})
 
 target_include_directories(pw_dart_native
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-    PRIVATE ${PIPEWIRE_INCLUDE_DIRS}
+    SYSTEM PRIVATE ${PIPEWIRE_INCLUDE_DIRS}
 )
 
 target_link_libraries(pw_dart_native
@@ -59,7 +59,7 @@ target_link_libraries(pw_dart_native
 
 target_compile_options(pw_dart_native
     PRIVATE ${PIPEWIRE_CFLAGS_OTHER}
-    PRIVATE -Wall -Wextra -Wpedantic
+    PRIVATE -Wall -Wextra
 )
 
 # --- Install ---
