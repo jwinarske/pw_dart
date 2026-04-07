@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 /// A PipeWire device.
@@ -31,24 +31,26 @@ class PwDevice {
   });
 
   factory PwDevice.fromJson(Map<String, dynamic> json) => PwDevice(
-        id: json['id'] as int,
-        name: (json['name'] as String?) ?? '',
-        description: (json['description'] as String?) ?? '',
-        mediaClass: (json['media_class'] as String?) ?? '',
-        api: (json['api'] as String?) ?? '',
-        properties: (json['properties'] as Map?)
-                ?.map((k, v) => MapEntry(k.toString(), v.toString())) ??
-            const {},
-      );
+    id: json['id'] as int,
+    name: (json['name'] as String?) ?? '',
+    description: (json['description'] as String?) ?? '',
+    mediaClass: (json['media_class'] as String?) ?? '',
+    api: (json['api'] as String?) ?? '',
+    properties:
+        (json['properties'] as Map?)?.map(
+          (k, v) => MapEntry(k.toString(), v.toString()),
+        ) ??
+        const {},
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'description': description,
-        'media_class': mediaClass,
-        'api': api,
-        'properties': properties,
-      };
+    'id': id,
+    'name': name,
+    'description': description,
+    'media_class': mediaClass,
+    'api': api,
+    'properties': properties,
+  };
 
   PwDevice copyWith({
     int? id,
@@ -57,15 +59,14 @@ class PwDevice {
     String? mediaClass,
     String? api,
     Map<String, String>? properties,
-  }) =>
-      PwDevice(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        description: description ?? this.description,
-        mediaClass: mediaClass ?? this.mediaClass,
-        api: api ?? this.api,
-        properties: properties ?? this.properties,
-      );
+  }) => PwDevice(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    description: description ?? this.description,
+    mediaClass: mediaClass ?? this.mediaClass,
+    api: api ?? this.api,
+    properties: properties ?? this.properties,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -77,4 +78,3 @@ class PwDevice {
   @override
   String toString() => 'PwDevice($id, "$name", $mediaClass)';
 }
-

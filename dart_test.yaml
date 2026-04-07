@@ -1,0 +1,7 @@
+tags:
+  integration:
+    # Integration tests connect to a real PipeWire daemon. They are not
+    # skipped by configuration — instead, the test file detects whether a
+    # daemon is reachable in setUpAll and marks tests skipped if not. So a
+    # plain `dart test` runs them when PipeWire is present and quietly
+    # skips them when it isn't.

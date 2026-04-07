@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 import 'package:pw_dart/pw_dart.dart';
@@ -28,15 +28,35 @@ void main() {
     });
 
     test('equality by id', () {
-      final a = PwNode(id: 1, name: 'a', mediaClass: '', state: PwNodeState.idle);
-      final b = PwNode(id: 1, name: 'b', mediaClass: '', state: PwNodeState.running);
-      final c = PwNode(id: 2, name: 'a', mediaClass: '', state: PwNodeState.idle);
+      final a = PwNode(
+        id: 1,
+        name: 'a',
+        mediaClass: '',
+        state: PwNodeState.idle,
+      );
+      final b = PwNode(
+        id: 1,
+        name: 'b',
+        mediaClass: '',
+        state: PwNodeState.running,
+      );
+      final c = PwNode(
+        id: 2,
+        name: 'a',
+        mediaClass: '',
+        state: PwNodeState.idle,
+      );
       expect(a, equals(b));
       expect(a, isNot(equals(c)));
     });
 
     test('copyWith', () {
-      final node = PwNode(id: 1, name: 'old', mediaClass: 'Audio/Sink', state: PwNodeState.idle);
+      final node = PwNode(
+        id: 1,
+        name: 'old',
+        mediaClass: 'Audio/Sink',
+        state: PwNodeState.idle,
+      );
       final updated = node.copyWith(name: 'new', state: PwNodeState.running);
       expect(updated.name, 'new');
       expect(updated.state, PwNodeState.running);
@@ -52,7 +72,12 @@ void main() {
     });
 
     test('toString', () {
-      final node = PwNode(id: 1, name: 'test', mediaClass: 'Audio/Sink', state: PwNodeState.running);
+      final node = PwNode(
+        id: 1,
+        name: 'test',
+        mediaClass: 'Audio/Sink',
+        state: PwNodeState.running,
+      );
       expect(node.toString(), contains('PwNode'));
       expect(node.toString(), contains('test'));
     });
@@ -175,4 +200,3 @@ void main() {
     });
   });
 }
-

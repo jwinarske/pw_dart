@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 //
 // pw_cli — interactive REPL for inspecting and mutating the PipeWire graph.
@@ -37,7 +37,8 @@ Future<void> main(List<String> args) async {
     stdout.write('pw> ');
     final line = stdin.readLineSync();
     if (line == null) break;
-    final parts = line.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
+    final parts =
+        line.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
     if (parts.isEmpty) continue;
 
     try {
@@ -66,27 +67,36 @@ Future<bool> _dispatch(PwClient client, List<String> parts) async {
       stdout.writeln(client.graph.summary);
     case 'nodes':
       for (final n in client.graph.nodes.values) {
-        stdout.writeln('  ${n.id}\t${n.state.name}\t${n.mediaClass}\t${n.name}');
+        stdout.writeln(
+          '  ${n.id}\t${n.state.name}\t${n.mediaClass}\t${n.name}',
+        );
       }
     case 'ports':
       final nodeFilter = rest.isNotEmpty ? int.parse(rest.first) : null;
-      final ports = nodeFilter == null
-          ? client.graph.ports.values
-          : client.graph.portsForNode(nodeFilter);
+      final ports =
+          nodeFilter == null
+              ? client.graph.ports.values
+              : client.graph.portsForNode(nodeFilter);
       for (final p in ports) {
-        stdout.writeln('  ${p.id}\tnode=${p.nodeId}\t${p.direction.name}\t${p.name}');
+        stdout.writeln(
+          '  ${p.id}\tnode=${p.nodeId}\t${p.direction.name}\t${p.name}',
+        );
       }
     case 'links':
       for (final l in client.graph.links.values) {
-        stdout.writeln('  ${l.id}\t${l.outputNodeId}:${l.outputPortId} -> '
-            '${l.inputNodeId}:${l.inputPortId}\t[${l.state.name}]');
+        stdout.writeln(
+          '  ${l.id}\t${l.outputNodeId}:${l.outputPortId} -> '
+          '${l.inputNodeId}:${l.inputPortId}\t[${l.state.name}]',
+        );
       }
     case 'devices':
       for (final d in client.graph.devices.values) {
         stdout.writeln('  ${d.id}');
       }
     case 'dump':
-      stdout.writeln(const JsonEncoder.withIndent('  ').convert(client.graph.toJson()));
+      stdout.writeln(
+        const JsonEncoder.withIndent('  ').convert(client.graph.toJson()),
+      );
     case 'getparams':
       _expect(rest, 1, 'getparams <node_id>');
       final params = await client.getNodeParams(int.parse(rest[0]));
@@ -98,7 +108,10 @@ Future<bool> _dispatch(PwClient client, List<String> parts) async {
       stdout.writeln('ok');
     case 'link':
       _expect(rest, 2, 'link <out_port_id> <in_port_id>');
-      final link = await client.createLink(int.parse(rest[0]), int.parse(rest[1]));
+      final link = await client.createLink(
+        int.parse(rest[0]),
+        int.parse(rest[1]),
+      );
       stdout.writeln('created link ${link.id}');
     case 'unlink':
       _expect(rest, 1, 'unlink <link_id>');

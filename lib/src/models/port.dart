@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 /// Port direction.
@@ -7,10 +7,10 @@ enum PwDirection {
   output;
 
   static PwDirection fromString(String s) => switch (s) {
-        'input' || 'in' => input,
-        'output' || 'out' => output,
-        _ => input,
-      };
+    'input' || 'in' => input,
+    'output' || 'out' => output,
+    _ => input,
+  };
 }
 
 /// A PipeWire port.
@@ -55,31 +55,34 @@ class PwPort {
   });
 
   factory PwPort.fromJson(Map<String, dynamic> json) => PwPort(
-        id: json['id'] as int,
-        nodeId: json['node_id'] as int,
-        name: (json['name'] as String?) ?? '',
-        direction:
-            PwDirection.fromString((json['direction'] as String?) ?? 'input'),
-        mediaType: (json['media_type'] as String?) ?? '',
-        isPhysical: (json['is_physical'] as bool?) ?? false,
-        isTerminal: (json['is_terminal'] as bool?) ?? false,
-        alias: (json['alias'] as String?) ?? '',
-        properties: (json['properties'] as Map?)
-                ?.map((k, v) => MapEntry(k.toString(), v.toString())) ??
-            const {},
-      );
+    id: json['id'] as int,
+    nodeId: json['node_id'] as int,
+    name: (json['name'] as String?) ?? '',
+    direction: PwDirection.fromString(
+      (json['direction'] as String?) ?? 'input',
+    ),
+    mediaType: (json['media_type'] as String?) ?? '',
+    isPhysical: (json['is_physical'] as bool?) ?? false,
+    isTerminal: (json['is_terminal'] as bool?) ?? false,
+    alias: (json['alias'] as String?) ?? '',
+    properties:
+        (json['properties'] as Map?)?.map(
+          (k, v) => MapEntry(k.toString(), v.toString()),
+        ) ??
+        const {},
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'node_id': nodeId,
-        'name': name,
-        'direction': direction.name,
-        'media_type': mediaType,
-        'is_physical': isPhysical,
-        'is_terminal': isTerminal,
-        'alias': alias,
-        'properties': properties,
-      };
+    'id': id,
+    'node_id': nodeId,
+    'name': name,
+    'direction': direction.name,
+    'media_type': mediaType,
+    'is_physical': isPhysical,
+    'is_terminal': isTerminal,
+    'alias': alias,
+    'properties': properties,
+  };
 
   PwPort copyWith({
     int? id,
@@ -91,18 +94,17 @@ class PwPort {
     bool? isTerminal,
     String? alias,
     Map<String, String>? properties,
-  }) =>
-      PwPort(
-        id: id ?? this.id,
-        nodeId: nodeId ?? this.nodeId,
-        name: name ?? this.name,
-        direction: direction ?? this.direction,
-        mediaType: mediaType ?? this.mediaType,
-        isPhysical: isPhysical ?? this.isPhysical,
-        isTerminal: isTerminal ?? this.isTerminal,
-        alias: alias ?? this.alias,
-        properties: properties ?? this.properties,
-      );
+  }) => PwPort(
+    id: id ?? this.id,
+    nodeId: nodeId ?? this.nodeId,
+    name: name ?? this.name,
+    direction: direction ?? this.direction,
+    mediaType: mediaType ?? this.mediaType,
+    isPhysical: isPhysical ?? this.isPhysical,
+    isTerminal: isTerminal ?? this.isTerminal,
+    alias: alias ?? this.alias,
+    properties: properties ?? this.properties,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -112,7 +114,5 @@ class PwPort {
   int get hashCode => id.hashCode;
 
   @override
-  String toString() =>
-      'PwPort($id, node=$nodeId, "$name", ${direction.name})';
+  String toString() => 'PwPort($id, node=$nodeId, "$name", ${direction.name})';
 }
-

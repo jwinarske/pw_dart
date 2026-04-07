@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 //
 // pw_dart_native.h — extern "C" interface consumed by dart:ffi

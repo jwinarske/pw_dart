@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 import 'dart:async';
@@ -36,10 +36,10 @@ class PwClient {
     required ReceivePort receivePort,
     required StreamController<PwGraphEvent> eventController,
     required PwGraph initialGraph,
-  })  : _bridge = bridge,
-        _receivePort = receivePort,
-        _eventController = eventController,
-        _graph = initialGraph;
+  }) : _bridge = bridge,
+       _receivePort = receivePort,
+       _eventController = eventController,
+       _graph = initialGraph;
 
   /// Connect to PipeWire and start receiving graph events.
   ///
@@ -92,15 +92,21 @@ class PwClient {
 
     // Wait for the LinkAdded event to arrive with the actual link info
     final event = await events
-        .where((e) =>
-            e is LinkAdded &&
-            e.link.outputPortId == outputPortId &&
-            e.link.inputPortId == inputPortId)
+        .where(
+          (e) =>
+              e is LinkAdded &&
+              e.link.outputPortId == outputPortId &&
+              e.link.inputPortId == inputPortId,
+        )
         .first
-        .timeout(const Duration(seconds: 5), onTimeout: () {
-      throw TimeoutException(
-          'Timed out waiting for link creation confirmation');
-    });
+        .timeout(
+          const Duration(seconds: 5),
+          onTimeout: () {
+            throw TimeoutException(
+              'Timed out waiting for link creation confirmation',
+            );
+          },
+        );
 
     return (event as LinkAdded).link;
   }
@@ -171,4 +177,3 @@ class PwClient {
     }
   }
 }
-

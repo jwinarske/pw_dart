@@ -6,4 +6,3 @@ export 'port.dart';
 export 'link.dart';
 export 'device.dart';
 export 'param.dart';
-

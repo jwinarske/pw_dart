@@ -1,0 +1,11 @@
+# Build artifacts produced by the native hook and ad-hoc CMake builds.
+src/build/
+src/build-tests/
+src/.cache/
+
+# Dart tooling output.
+.dart_tool/
+
+# Editor / IDE.
+.vscode/
+.idea/

@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 import 'models/models.dart';
@@ -38,14 +38,13 @@ class NodeAdded extends PwGraphEvent {
 
   const NodeAdded({required this.node});
 
-  factory NodeAdded.fromJson(Map<String, dynamic> json) => NodeAdded(
-        node: PwNode.fromJson(json['node'] as Map<String, dynamic>),
-      );
+  factory NodeAdded.fromJson(Map<String, dynamic> json) =>
+      NodeAdded(node: PwNode.fromJson(json['node'] as Map<String, dynamic>));
 
   Map<String, dynamic> toJson() => {
-        'type': 'node_added',
-        'node': node.toJson(),
-      };
+    'type': 'node_added',
+    'node': node.toJson(),
+  };
 
   @override
   String toString() => 'NodeAdded(${node.id}, "${node.name}")';
@@ -57,14 +56,10 @@ class NodeRemoved extends PwGraphEvent {
 
   const NodeRemoved({required this.nodeId});
 
-  factory NodeRemoved.fromJson(Map<String, dynamic> json) => NodeRemoved(
-        nodeId: json['node_id'] as int,
-      );
+  factory NodeRemoved.fromJson(Map<String, dynamic> json) =>
+      NodeRemoved(nodeId: json['node_id'] as int);
 
-  Map<String, dynamic> toJson() => {
-        'type': 'node_removed',
-        'node_id': nodeId,
-      };
+  Map<String, dynamic> toJson() => {'type': 'node_removed', 'node_id': nodeId};
 
   @override
   String toString() => 'NodeRemoved($nodeId)';
@@ -82,9 +77,9 @@ class NodeInfoChanged extends PwGraphEvent {
       );
 
   Map<String, dynamic> toJson() => {
-        'type': 'node_info_changed',
-        'node': node.toJson(),
-      };
+    'type': 'node_info_changed',
+    'node': node.toJson(),
+  };
 
   @override
   String toString() => 'NodeInfoChanged(${node.id}, "${node.name}")';
@@ -96,14 +91,13 @@ class PortAdded extends PwGraphEvent {
 
   const PortAdded({required this.port});
 
-  factory PortAdded.fromJson(Map<String, dynamic> json) => PortAdded(
-        port: PwPort.fromJson(json['port'] as Map<String, dynamic>),
-      );
+  factory PortAdded.fromJson(Map<String, dynamic> json) =>
+      PortAdded(port: PwPort.fromJson(json['port'] as Map<String, dynamic>));
 
   Map<String, dynamic> toJson() => {
-        'type': 'port_added',
-        'port': port.toJson(),
-      };
+    'type': 'port_added',
+    'port': port.toJson(),
+  };
 
   @override
   String toString() => 'PortAdded(${port.id}, node=${port.nodeId})';
@@ -115,14 +109,10 @@ class PortRemoved extends PwGraphEvent {
 
   const PortRemoved({required this.portId});
 
-  factory PortRemoved.fromJson(Map<String, dynamic> json) => PortRemoved(
-        portId: json['port_id'] as int,
-      );
+  factory PortRemoved.fromJson(Map<String, dynamic> json) =>
+      PortRemoved(portId: json['port_id'] as int);
 
-  Map<String, dynamic> toJson() => {
-        'type': 'port_removed',
-        'port_id': portId,
-      };
+  Map<String, dynamic> toJson() => {'type': 'port_removed', 'port_id': portId};
 
   @override
   String toString() => 'PortRemoved($portId)';
@@ -134,14 +124,13 @@ class LinkAdded extends PwGraphEvent {
 
   const LinkAdded({required this.link});
 
-  factory LinkAdded.fromJson(Map<String, dynamic> json) => LinkAdded(
-        link: PwLink.fromJson(json['link'] as Map<String, dynamic>),
-      );
+  factory LinkAdded.fromJson(Map<String, dynamic> json) =>
+      LinkAdded(link: PwLink.fromJson(json['link'] as Map<String, dynamic>));
 
   Map<String, dynamic> toJson() => {
-        'type': 'link_added',
-        'link': link.toJson(),
-      };
+    'type': 'link_added',
+    'link': link.toJson(),
+  };
 
   @override
   String toString() => 'LinkAdded(${link.id})';
@@ -153,14 +142,10 @@ class LinkRemoved extends PwGraphEvent {
 
   const LinkRemoved({required this.linkId});
 
-  factory LinkRemoved.fromJson(Map<String, dynamic> json) => LinkRemoved(
-        linkId: json['link_id'] as int,
-      );
+  factory LinkRemoved.fromJson(Map<String, dynamic> json) =>
+      LinkRemoved(linkId: json['link_id'] as int);
 
-  Map<String, dynamic> toJson() => {
-        'type': 'link_removed',
-        'link_id': linkId,
-      };
+  Map<String, dynamic> toJson() => {'type': 'link_removed', 'link_id': linkId};
 
   @override
   String toString() => 'LinkRemoved($linkId)';
@@ -178,9 +163,9 @@ class LinkStateChanged extends PwGraphEvent {
       );
 
   Map<String, dynamic> toJson() => {
-        'type': 'link_state_changed',
-        'link': link.toJson(),
-      };
+    'type': 'link_state_changed',
+    'link': link.toJson(),
+  };
 
   @override
   String toString() => 'LinkStateChanged(${link.id}, ${link.state})';
@@ -192,26 +177,21 @@ class ParamChanged extends PwGraphEvent {
   final String key;
   final Object? value;
 
-  const ParamChanged({
-    required this.nodeId,
-    required this.key,
-    this.value,
-  });
+  const ParamChanged({required this.nodeId, required this.key, this.value});
 
   factory ParamChanged.fromJson(Map<String, dynamic> json) => ParamChanged(
-        nodeId: json['node_id'] as int,
-        key: json['key'] as String,
-        value: json['value'],
-      );
+    nodeId: json['node_id'] as int,
+    key: json['key'] as String,
+    value: json['value'],
+  );
 
   Map<String, dynamic> toJson() => {
-        'type': 'param_changed',
-        'node_id': nodeId,
-        'key': key,
-        if (value != null) 'value': value,
-      };
+    'type': 'param_changed',
+    'node_id': nodeId,
+    'key': key,
+    if (value != null) 'value': value,
+  };
 
   @override
   String toString() => 'ParamChanged(node=$nodeId, "$key")';
 }
-

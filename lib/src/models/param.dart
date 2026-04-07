@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 /// Parameter value type.
@@ -12,24 +12,24 @@ enum PwParamType {
   unknown;
 
   static PwParamType fromString(String s) => switch (s) {
-        'Int' || 'int' => int_,
-        'Float' || 'float' => float_,
-        'Double' || 'double' => double_,
-        'String' || 'string' => string,
-        'Bool' || 'bool' => bool_,
-        'Bytes' || 'bytes' => bytes,
-        _ => unknown,
-      };
+    'Int' || 'int' => int_,
+    'Float' || 'float' => float_,
+    'Double' || 'double' => double_,
+    'String' || 'string' => string,
+    'Bool' || 'bool' => bool_,
+    'Bytes' || 'bytes' => bytes,
+    _ => unknown,
+  };
 
   String toJsonString() => switch (this) {
-        int_ => 'Int',
-        float_ => 'Float',
-        double_ => 'Double',
-        string => 'String',
-        bool_ => 'Bool',
-        bytes => 'Bytes',
-        unknown => 'Unknown',
-      };
+    int_ => 'Int',
+    float_ => 'Float',
+    double_ => 'Double',
+    string => 'String',
+    bool_ => 'Bool',
+    bytes => 'Bytes',
+    unknown => 'Unknown',
+  };
 }
 
 /// Parameter flags.
@@ -37,20 +37,14 @@ class PwParamFlags {
   final bool readable;
   final bool writable;
 
-  const PwParamFlags({
-    this.readable = true,
-    this.writable = false,
-  });
+  const PwParamFlags({this.readable = true, this.writable = false});
 
   factory PwParamFlags.fromJson(Map<String, dynamic> json) => PwParamFlags(
-        readable: (json['readable'] as bool?) ?? true,
-        writable: (json['writable'] as bool?) ?? false,
-      );
+    readable: (json['readable'] as bool?) ?? true,
+    writable: (json['writable'] as bool?) ?? false,
+  );
 
-  Map<String, dynamic> toJson() => {
-        'readable': readable,
-        'writable': writable,
-      };
+  Map<String, dynamic> toJson() => {'readable': readable, 'writable': writable};
 
   @override
   String toString() =>
@@ -91,26 +85,27 @@ class PwParam {
   });
 
   factory PwParam.fromJson(Map<String, dynamic> json) => PwParam(
-        key: json['key'] as String,
-        value: json['value'],
-        type: PwParamType.fromString((json['type'] as String?) ?? 'unknown'),
-        flags: json['flags'] != null
+    key: json['key'] as String,
+    value: json['value'],
+    type: PwParamType.fromString((json['type'] as String?) ?? 'unknown'),
+    flags:
+        json['flags'] != null
             ? PwParamFlags.fromJson(json['flags'] as Map<String, dynamic>)
             : const PwParamFlags(),
-        defaultValue: json['default'],
-        min: json['min'],
-        max: json['max'],
-      );
+    defaultValue: json['default'],
+    min: json['min'],
+    max: json['max'],
+  );
 
   Map<String, dynamic> toJson() => {
-        'key': key,
-        'value': value,
-        'type': type.toJsonString(),
-        'flags': flags.toJson(),
-        if (defaultValue != null) 'default': defaultValue,
-        if (min != null) 'min': min,
-        if (max != null) 'max': max,
-      };
+    'key': key,
+    'value': value,
+    'type': type.toJsonString(),
+    'flags': flags.toJson(),
+    if (defaultValue != null) 'default': defaultValue,
+    if (min != null) 'min': min,
+    if (max != null) 'max': max,
+  };
 
   @override
   bool operator ==(Object other) =>
@@ -122,4 +117,3 @@ class PwParam {
   @override
   String toString() => 'PwParam("$key", $value, ${type.toJsonString()})';
 }
-

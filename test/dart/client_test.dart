@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 import 'dart:async';
@@ -56,7 +56,12 @@ void main() {
       // Simulate native event
       mockBridge.simulateEvent({
         'type': 'node_added',
-        'node': {'id': 42, 'name': 'new_node', 'media_class': 'Audio/Sink', 'state': 'idle'},
+        'node': {
+          'id': 42,
+          'name': 'new_node',
+          'media_class': 'Audio/Sink',
+          'state': 'idle',
+        },
       });
 
       // Give the event time to propagate
@@ -83,10 +88,7 @@ void main() {
       expect(client.graph.nodes.length, 1);
       expect(client.graph.nodes[1]!.name, 'test');
 
-      mockBridge.simulateEvent({
-        'type': 'node_removed',
-        'node_id': 1,
-      });
+      mockBridge.simulateEvent({'type': 'node_removed', 'node_id': 1});
 
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
@@ -184,7 +186,8 @@ void main() {
       final client = await PwClient.connect(bridge: mockBridge);
       expect(client.graph.nodes, isEmpty);
 
-      mockBridge.snapshotJson = '{"nodes":[{"id":1,"name":"new","state":"idle"}],"ports":[],"links":[],"devices":[]}';
+      mockBridge.snapshotJson =
+          '{"nodes":[{"id":1,"name":"new","state":"idle"}],"ports":[],"links":[],"devices":[]}';
       client.refreshGraph();
       expect(client.graph.nodes.length, 1);
 
@@ -192,4 +195,3 @@ void main() {
     });
   });
 }
-

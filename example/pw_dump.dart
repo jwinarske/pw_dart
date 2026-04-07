@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 //
 // pw_dump — print the current PipeWire graph snapshot as JSON.
@@ -18,7 +18,8 @@ Future<void> main(List<String> args) async {
   final client = await PwClient.connect(remoteName: remote);
   try {
     final json = client.graph.toJson();
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     stdout.writeln(encoder.convert(json));
   } finally {
     await client.dispose();

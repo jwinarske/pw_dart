@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 import 'package:pw_dart/pw_dart.dart';
@@ -14,7 +14,7 @@ void main() {
           'name': 'test_node',
           'media_class': 'Audio/Sink',
           'state': 'idle',
-        }
+        },
       };
       final event = PwGraphEvent.fromJson(json);
       expect(event, isA<NodeAdded>());
@@ -127,7 +127,12 @@ void main() {
   group('Event toJson', () {
     test('NodeAdded toJson', () {
       final event = NodeAdded(
-        node: PwNode(id: 1, name: 'test', mediaClass: 'Audio/Sink', state: PwNodeState.idle),
+        node: PwNode(
+          id: 1,
+          name: 'test',
+          mediaClass: 'Audio/Sink',
+          state: PwNodeState.idle,
+        ),
       );
       final json = event.toJson();
       expect(json['type'], 'node_added');
@@ -153,14 +158,53 @@ void main() {
   group('Event toString', () {
     test('all events have meaningful toString', () {
       final events = <PwGraphEvent>[
-        NodeAdded(node: PwNode(id: 1, name: 'n', mediaClass: '', state: PwNodeState.idle)),
+        NodeAdded(
+          node: PwNode(
+            id: 1,
+            name: 'n',
+            mediaClass: '',
+            state: PwNodeState.idle,
+          ),
+        ),
         NodeRemoved(nodeId: 1),
-        NodeInfoChanged(node: PwNode(id: 1, name: 'n', mediaClass: '', state: PwNodeState.idle)),
-        PortAdded(port: PwPort(id: 1, nodeId: 1, name: 'p', direction: PwDirection.output)),
+        NodeInfoChanged(
+          node: PwNode(
+            id: 1,
+            name: 'n',
+            mediaClass: '',
+            state: PwNodeState.idle,
+          ),
+        ),
+        PortAdded(
+          port: PwPort(
+            id: 1,
+            nodeId: 1,
+            name: 'p',
+            direction: PwDirection.output,
+          ),
+        ),
         PortRemoved(portId: 1),
-        LinkAdded(link: PwLink(id: 1, outputNodeId: 1, outputPortId: 2, inputNodeId: 3, inputPortId: 4, state: PwLinkState.active)),
+        LinkAdded(
+          link: PwLink(
+            id: 1,
+            outputNodeId: 1,
+            outputPortId: 2,
+            inputNodeId: 3,
+            inputPortId: 4,
+            state: PwLinkState.active,
+          ),
+        ),
         LinkRemoved(linkId: 1),
-        LinkStateChanged(link: PwLink(id: 1, outputNodeId: 1, outputPortId: 2, inputNodeId: 3, inputPortId: 4, state: PwLinkState.paused)),
+        LinkStateChanged(
+          link: PwLink(
+            id: 1,
+            outputNodeId: 1,
+            outputPortId: 2,
+            inputNodeId: 3,
+            inputPortId: 4,
+            state: PwLinkState.paused,
+          ),
+        ),
         ParamChanged(nodeId: 1, key: 'k'),
       ];
 
@@ -171,4 +215,3 @@ void main() {
     });
   });
 }
-

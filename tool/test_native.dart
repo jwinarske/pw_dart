@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 //
 // Configure, build, and run the C++ unit tests under test/native/.
@@ -37,8 +37,10 @@ Future<void> main(List<String> args) async {
 
   if (!File('${buildDir.path}/CMakeCache.txt').existsSync()) {
     await _run('cmake', [
-      '-S', srcDir.path,
-      '-B', buildDir.path,
+      '-S',
+      srcDir.path,
+      '-B',
+      buildDir.path,
       '-DCMAKE_BUILD_TYPE=Debug',
       '-DBUILD_TESTING=ON',
       if (hasNinja) ...['-G', 'Ninja'],
@@ -47,11 +49,10 @@ Future<void> main(List<String> args) async {
 
   await _run('cmake', ['--build', buildDir.path, '--parallel']);
 
-  await _run(
-    'ctest',
-    ['--output-on-failure', ...ctestArgs],
-    workingDirectory: buildDir.path,
-  );
+  await _run('ctest', [
+    '--output-on-failure',
+    ...ctestArgs,
+  ], workingDirectory: buildDir.path);
 }
 
 List<String> _argsAfterDoubleDash(List<String> args) {

@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 //
 // Native assets build hook for pw_dart.
@@ -32,8 +32,10 @@ void main(List<String> args) async {
 
     if (!File('${buildDir}CMakeCache.txt').existsSync()) {
       await _run('cmake', [
-        '-S', srcDir,
-        '-B', buildDir,
+        '-S',
+        srcDir,
+        '-B',
+        buildDir,
         '-DCMAKE_BUILD_TYPE=Release',
         '-DBUILD_TESTING=OFF',
         if (hasNinja) ...['-G', 'Ninja'],
@@ -76,11 +78,7 @@ void main(List<String> args) async {
 }
 
 Future<void> _run(String exe, List<String> args) async {
-  final p = await Process.start(
-    exe,
-    args,
-    mode: ProcessStartMode.inheritStdio,
-  );
+  final p = await Process.start(exe, args, mode: ProcessStartMode.inheritStdio);
   final code = await p.exitCode;
   if (code != 0) {
     throw ProcessException(exe, args, 'exit code $code', code);

@@ -1,10 +1,8 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 import 'dart:ffi';
 import 'dart:isolate';
-
-import 'package:meta/meta.dart';
 
 import '../graph.dart';
 import '../models/models.dart';
@@ -26,7 +24,7 @@ class PwNativeBridge {
 
   /// Create a bridge with explicit bindings (for production use).
   PwNativeBridge.withBindings(PwDartNativeBindings bindings)
-      : _bindings = bindings;
+    : _bindings = bindings;
 
   /// Protected constructor for subclasses (mocks) that don't need bindings.
   PwNativeBridge.forTesting();
@@ -35,7 +33,6 @@ class PwNativeBridge {
   bool get isConnected => _clientHandle != null && _clientHandle != nullptr;
 
   /// Connect to PipeWire. The [sendPort] receives JSON event strings.
-  @mustCallSuper
   void connect({String? remoteName, required SendPort sendPort}) {
     final nativePort = sendPort.nativePort;
     _clientHandle = _bindings.pwDartConnect(remoteName, nativePort);
@@ -45,7 +42,6 @@ class PwNativeBridge {
   }
 
   /// Disconnect from PipeWire and free resources.
-  @mustCallSuper
   void disconnect() {
     if (_clientHandle != null) {
       _bindings.pwDartDisconnect(_clientHandle!);
@@ -71,7 +67,10 @@ class PwNativeBridge {
   int createLink(int outputPortId, int inputPortId) {
     _ensureConnected();
     final result = _bindings.pwDartCreateLink(
-        _clientHandle!, outputPortId, inputPortId);
+      _clientHandle!,
+      outputPortId,
+      inputPortId,
+    );
     if (result < 0) {
       throw StateError('Failed to create link: error $result');
     }
@@ -108,10 +107,10 @@ class PwNativeBridge {
   }
 
   static (int, int, int) _unpackVersion(int packed) => (
-        (packed >> 16) & 0xFF,
-        (packed >> 8) & 0xFF,
-        packed & 0xFF,
-      );
+    (packed >> 16) & 0xFF,
+    (packed >> 8) & 0xFF,
+    packed & 0xFF,
+  );
 
   void _ensureConnected() {
     if (!isConnected) {
@@ -156,4 +155,3 @@ class PwVersionInfo {
   String toString() =>
       'PwVersionInfo(header=$headerVersionString, lib=$libraryVersionString, compatible=$isCompatible)';
 }
-

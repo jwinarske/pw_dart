@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 import 'dart:convert';
@@ -33,10 +33,10 @@ class PwGraph {
 
   /// Create an empty graph.
   const PwGraph.empty()
-      : nodes = const {},
-        ports = const {},
-        links = const {},
-        devices = const {};
+    : nodes = const {},
+      ports = const {},
+      links = const {},
+      devices = const {};
 
   /// Deserialize a graph from a JSON snapshot string.
   factory PwGraph.fromJsonString(String jsonString) {
@@ -89,24 +89,24 @@ class PwGraph {
 
   /// Serialize to JSON map.
   Map<String, dynamic> toJson() => {
-        'nodes': nodes.values.map((n) => n.toJson()).toList(),
-        'ports': ports.values.map((p) => p.toJson()).toList(),
-        'links': links.values.map((l) => l.toJson()).toList(),
-        'devices': devices.values.map((d) => d.toJson()).toList(),
-      };
+    'nodes': nodes.values.map((n) => n.toJson()).toList(),
+    'ports': ports.values.map((p) => p.toJson()).toList(),
+    'links': links.values.map((l) => l.toJson()).toList(),
+    'devices': devices.values.map((d) => d.toJson()).toList(),
+  };
 
   /// Apply a [PwGraphEvent] and return the new graph snapshot.
   PwGraph applyEvent(PwGraphEvent event) => switch (event) {
-        NodeAdded(:final node) => _withNode(node),
-        NodeRemoved(:final nodeId) => _withoutNode(nodeId),
-        NodeInfoChanged(:final node) => _withNode(node),
-        PortAdded(:final port) => _withPort(port),
-        PortRemoved(:final portId) => _withoutPort(portId),
-        LinkAdded(:final link) => _withLink(link),
-        LinkRemoved(:final linkId) => _withoutLink(linkId),
-        LinkStateChanged(:final link) => _withLink(link),
-        ParamChanged() => this, // Params don't change graph topology
-      };
+    NodeAdded(:final node) => _withNode(node),
+    NodeRemoved(:final nodeId) => _withoutNode(nodeId),
+    NodeInfoChanged(:final node) => _withNode(node),
+    PortAdded(:final port) => _withPort(port),
+    PortRemoved(:final portId) => _withoutPort(portId),
+    LinkAdded(:final link) => _withLink(link),
+    LinkRemoved(:final linkId) => _withoutLink(linkId),
+    LinkStateChanged(:final link) => _withLink(link),
+    ParamChanged() => this, // Params don't change graph topology
+  };
 
   /// Get all ports belonging to a node.
   List<PwPort> portsForNode(int nodeId) =>
@@ -116,9 +116,11 @@ class PwGraph {
   List<PwLink> linksForNode(int nodeId) {
     final nodePorts = portsForNode(nodeId).map((p) => p.id).toSet();
     return links.values
-        .where((l) =>
-            nodePorts.contains(l.outputPortId) ||
-            nodePorts.contains(l.inputPortId))
+        .where(
+          (l) =>
+              nodePorts.contains(l.outputPortId) ||
+              nodePorts.contains(l.inputPortId),
+        )
         .toList();
   }
 
@@ -130,51 +132,47 @@ class PwGraph {
   // --- Private mutation helpers (return new snapshots) ---
 
   PwGraph _withNode(PwNode node) => PwGraph(
-        nodes: Map.unmodifiable({...nodes, node.id: node}),
-        ports: ports,
-        links: links,
-        devices: devices,
-      );
+    nodes: Map.unmodifiable({...nodes, node.id: node}),
+    ports: ports,
+    links: links,
+    devices: devices,
+  );
 
   PwGraph _withoutNode(int nodeId) => PwGraph(
-        nodes: Map.unmodifiable(
-            Map.of(nodes)..remove(nodeId)),
-        ports: ports,
-        links: links,
-        devices: devices,
-      );
+    nodes: Map.unmodifiable(Map.of(nodes)..remove(nodeId)),
+    ports: ports,
+    links: links,
+    devices: devices,
+  );
 
   PwGraph _withPort(PwPort port) => PwGraph(
-        nodes: nodes,
-        ports: Map.unmodifiable({...ports, port.id: port}),
-        links: links,
-        devices: devices,
-      );
+    nodes: nodes,
+    ports: Map.unmodifiable({...ports, port.id: port}),
+    links: links,
+    devices: devices,
+  );
 
   PwGraph _withoutPort(int portId) => PwGraph(
-        nodes: nodes,
-        ports: Map.unmodifiable(
-            Map.of(ports)..remove(portId)),
-        links: links,
-        devices: devices,
-      );
+    nodes: nodes,
+    ports: Map.unmodifiable(Map.of(ports)..remove(portId)),
+    links: links,
+    devices: devices,
+  );
 
   PwGraph _withLink(PwLink link) => PwGraph(
-        nodes: nodes,
-        ports: ports,
-        links: Map.unmodifiable({...links, link.id: link}),
-        devices: devices,
-      );
+    nodes: nodes,
+    ports: ports,
+    links: Map.unmodifiable({...links, link.id: link}),
+    devices: devices,
+  );
 
   PwGraph _withoutLink(int linkId) => PwGraph(
-        nodes: nodes,
-        ports: ports,
-        links: Map.unmodifiable(
-            Map.of(links)..remove(linkId)),
-        devices: devices,
-      );
+    nodes: nodes,
+    ports: ports,
+    links: Map.unmodifiable(Map.of(links)..remove(linkId)),
+    devices: devices,
+  );
 
   @override
   String toString() => 'PwGraph($summary)';
 }
-

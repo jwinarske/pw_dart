@@ -1,12 +1,10 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:pw_dart/pw_dart.dart';
-import 'package:pw_dart/src/ffi/native_bridge.dart';
 
 /// Mock implementation of [PwNativeBridge] for unit testing.
 ///
@@ -20,8 +18,7 @@ class MockPwNativeBridge extends PwNativeBridge {
   SendPort? capturedSendPort;
 
   // Configurable responses
-  String snapshotJson =
-      '{"nodes":[],"ports":[],"links":[],"devices":[]}';
+  String snapshotJson = '{"nodes":[],"ports":[],"links":[],"devices":[]}';
   String paramsJson = '[]';
   int createLinkResult = 0;
   int destroyLinkResult = 0;
@@ -92,10 +89,7 @@ class MockPwNativeBridge extends PwNativeBridge {
   @override
   PwVersionInfo getVersionInfo() {
     calls.add('getVersionInfo');
-    return PwVersionInfo(
-      headerVersion: headerVer,
-      libraryVersion: libraryVer,
-    );
+    return PwVersionInfo(headerVersion: headerVer, libraryVersion: libraryVer);
   }
 
   /// Simulate sending an event from native to Dart.
@@ -108,5 +102,3 @@ class MockPwNativeBridge extends PwNativeBridge {
     capturedSendPort?.send(json);
   }
 }
-
-

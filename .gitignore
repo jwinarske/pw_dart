@@ -1,0 +1,18 @@
+# Dart/Flutter
+.dart_tool/
+.packages
+build/
+pubspec.lock
+.pub-cache/
+.pub/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Native build
+*.o
+*.so
+*.dylib
+*.dll

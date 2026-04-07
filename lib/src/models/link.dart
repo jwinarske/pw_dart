@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 
 /// PipeWire link state.
@@ -12,15 +12,15 @@ enum PwLinkState {
   active;
 
   static PwLinkState fromString(String s) => switch (s) {
-        'error' => error,
-        'unlinked' => unlinked,
-        'init' => init,
-        'negotiating' => negotiating,
-        'allocating' => allocating,
-        'paused' => paused,
-        'active' => active,
-        _ => error,
-      };
+    'error' => error,
+    'unlinked' => unlinked,
+    'init' => init,
+    'negotiating' => negotiating,
+    'allocating' => allocating,
+    'paused' => paused,
+    'active' => active,
+    _ => error,
+  };
 }
 
 /// A PipeWire link connecting an output port to an input port.
@@ -61,29 +61,30 @@ class PwLink {
   });
 
   factory PwLink.fromJson(Map<String, dynamic> json) => PwLink(
-        id: json['id'] as int,
-        outputNodeId: json['output_node_id'] as int,
-        outputPortId: json['output_port_id'] as int,
-        inputNodeId: json['input_node_id'] as int,
-        inputPortId: json['input_port_id'] as int,
-        state:
-            PwLinkState.fromString((json['state'] as String?) ?? 'error'),
-        error: (json['error'] as String?) ?? '',
-        properties: (json['properties'] as Map?)
-                ?.map((k, v) => MapEntry(k.toString(), v.toString())) ??
-            const {},
-      );
+    id: json['id'] as int,
+    outputNodeId: json['output_node_id'] as int,
+    outputPortId: json['output_port_id'] as int,
+    inputNodeId: json['input_node_id'] as int,
+    inputPortId: json['input_port_id'] as int,
+    state: PwLinkState.fromString((json['state'] as String?) ?? 'error'),
+    error: (json['error'] as String?) ?? '',
+    properties:
+        (json['properties'] as Map?)?.map(
+          (k, v) => MapEntry(k.toString(), v.toString()),
+        ) ??
+        const {},
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'output_node_id': outputNodeId,
-        'output_port_id': outputPortId,
-        'input_node_id': inputNodeId,
-        'input_port_id': inputPortId,
-        'state': state.name,
-        'error': error,
-        'properties': properties,
-      };
+    'id': id,
+    'output_node_id': outputNodeId,
+    'output_port_id': outputPortId,
+    'input_node_id': inputNodeId,
+    'input_port_id': inputPortId,
+    'state': state.name,
+    'error': error,
+    'properties': properties,
+  };
 
   PwLink copyWith({
     int? id,
@@ -94,17 +95,16 @@ class PwLink {
     PwLinkState? state,
     String? error,
     Map<String, String>? properties,
-  }) =>
-      PwLink(
-        id: id ?? this.id,
-        outputNodeId: outputNodeId ?? this.outputNodeId,
-        outputPortId: outputPortId ?? this.outputPortId,
-        inputNodeId: inputNodeId ?? this.inputNodeId,
-        inputPortId: inputPortId ?? this.inputPortId,
-        state: state ?? this.state,
-        error: error ?? this.error,
-        properties: properties ?? this.properties,
-      );
+  }) => PwLink(
+    id: id ?? this.id,
+    outputNodeId: outputNodeId ?? this.outputNodeId,
+    outputPortId: outputPortId ?? this.outputPortId,
+    inputNodeId: inputNodeId ?? this.inputNodeId,
+    inputPortId: inputPortId ?? this.inputPortId,
+    state: state ?? this.state,
+    error: error ?? this.error,
+    properties: properties ?? this.properties,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -117,4 +117,3 @@ class PwLink {
   String toString() =>
       'PwLink($id, $outputNodeId:$outputPortId → $inputNodeId:$inputPortId, $state)';
 }
-

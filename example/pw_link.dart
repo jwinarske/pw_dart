@@ -1,4 +1,4 @@
-// Copyright 2026 Tonic Contributors
+// Copyright 2026 Joel Winarske
 // Licensed under the Apache License, Version 2.0
 //
 // pw_link — list, create, or destroy PipeWire links.
@@ -23,10 +23,12 @@ Future<void> main(List<String> args) async {
     switch (args.first) {
       case 'list':
         for (final link in client.graph.links.values) {
-          stdout.writeln('${link.id}\t'
-              '${link.outputNodeId}:${link.outputPortId} -> '
-              '${link.inputNodeId}:${link.inputPortId}\t'
-              '[${link.state.name}]');
+          stdout.writeln(
+            '${link.id}\t'
+            '${link.outputNodeId}:${link.outputPortId} -> '
+            '${link.inputNodeId}:${link.inputPortId}\t'
+            '[${link.state.name}]',
+          );
         }
       case 'create':
         if (args.length < 3) {
