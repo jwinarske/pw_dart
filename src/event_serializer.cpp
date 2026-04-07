@@ -12,14 +12,13 @@ namespace pw_dart {
 
 // Force instantiation of template functions to verify they compile.
 [[maybe_unused]] static void verify_compilation_() {
-    NodeAddedEvent e;
-    GraphEvent ev = e;
-    [[maybe_unused]] auto json = serialize_event(ev);
+  NodeAddedEvent e;
+  GraphEvent ev = e;
+  [[maybe_unused]] auto json = serialize_event(ev);
 
-    GraphSnapshot snap;
-    [[maybe_unused]] auto snap_json = serialize_snapshot(snap);
-    [[maybe_unused]] auto snap2 = deserialize_snapshot(snap_json);
+  GraphSnapshot snap;
+  [[maybe_unused]] auto snap_json = serialize_snapshot(snap);
+  [[maybe_unused]] auto snap2 = deserialize_snapshot(snap_json);
 }
 
 }  // namespace pw_dart
-

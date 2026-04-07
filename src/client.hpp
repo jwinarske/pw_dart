@@ -17,7 +17,8 @@
 #include "command_queue.hpp"
 #include "event_serializer.hpp"
 
-// Forward declarations for PipeWire types (avoid including PW headers in this header)
+// Forward declarations for PipeWire types (avoid including PW headers in this
+// header)
 struct pw_main_loop;
 struct pw_context;
 struct pw_core;
@@ -39,112 +40,112 @@ class LinkManager;
 /// - A RegistryMonitor for tracking graph objects
 /// - Event posting to Dart via Dart_PostCObject
 class PwDartClientImpl {
-public:
-    /// Create a client but don't connect yet.
-    explicit PwDartClientImpl(int64_t dart_send_port);
-    ~PwDartClientImpl();
+ public:
+  /// Create a client but don't connect yet.
+  explicit PwDartClientImpl(int64_t dart_send_port);
+  ~PwDartClientImpl();
 
-    // Non-copyable, non-movable
-    PwDartClientImpl(const PwDartClientImpl&) = delete;
-    PwDartClientImpl& operator=(const PwDartClientImpl&) = delete;
+  // Non-copyable, non-movable
+  PwDartClientImpl(const PwDartClientImpl&) = delete;
+  PwDartClientImpl& operator=(const PwDartClientImpl&) = delete;
 
-    /// Connect to PipeWire and start the event loop.
-    /// @param remote_name PipeWire remote (nullptr for default).
-    /// @return true on success.
-    bool connect(const char* remote_name);
+  /// Connect to PipeWire and start the event loop.
+  /// @param remote_name PipeWire remote (nullptr for default).
+  /// @return true on success.
+  bool connect(const char* remote_name);
 
-    /// Disconnect and stop the event loop. Blocks until the thread exits.
-    void disconnect();
+  /// Disconnect and stop the event loop. Blocks until the thread exits.
+  void disconnect();
 
-    /// Get a JSON snapshot of the graph.
-    std::string get_graph_snapshot();
+  /// Get a JSON snapshot of the graph.
+  std::string get_graph_snapshot();
 
-    /// Get JSON-encoded params for a node.
-    std::string get_node_params(uint32_t node_id);
+  /// Get JSON-encoded params for a node.
+  std::string get_node_params(uint32_t node_id);
 
-    /// Queue a create-link command.
-    int32_t create_link(uint32_t output_port_id, uint32_t input_port_id);
+  /// Queue a create-link command.
+  int32_t create_link(uint32_t output_port_id, uint32_t input_port_id);
 
-    /// Queue a destroy-link command.
-    int32_t destroy_link(uint32_t link_id);
+  /// Queue a destroy-link command.
+  int32_t destroy_link(uint32_t link_id);
 
-    /// Queue a set-param command.
-    int32_t set_node_param(uint32_t node_id, const char* param_json);
+  /// Queue a set-param command.
+  int32_t set_node_param(uint32_t node_id, const char* param_json);
 
-    /// Post a serialized event to Dart.
-    void post_event(const std::string& json);
+  /// Post a serialized event to Dart.
+  void post_event(const std::string& json);
 
-    /// Post a GraphEvent to Dart.
-    void post_event(const GraphEvent& event);
+  /// Post a GraphEvent to Dart.
+  void post_event(const GraphEvent& event);
 
-    /// Access the command queue (for the PW thread to drain).
-    CommandQueue& command_queue() { return cmd_queue_; }
+  /// Access the command queue (for the PW thread to drain).
+  CommandQueue& command_queue() { return cmd_queue_; }
 
-    /// Access the registry monitor.
-    RegistryMonitor* registry_monitor() { return registry_.get(); }
+  /// Access the registry monitor.
+  RegistryMonitor* registry_monitor() { return registry_.get(); }
 
-    /// Access the param handler.
-    ParamHandler* param_handler() { return params_.get(); }
+  /// Access the param handler.
+  ParamHandler* param_handler() { return params_.get(); }
 
-    /// Access the link manager.
-    LinkManager* link_manager() { return links_.get(); }
+  /// Access the link manager.
+  LinkManager* link_manager() { return links_.get(); }
 
-    /// Check if connected.
-    bool is_connected() const { return connected_.load(std::memory_order_acquire); }
+  /// Check if connected.
+  [[nodiscard]] bool is_connected() const {
+    return connected_.load(std::memory_order_acquire);
+  }
 
-    /// Get the pw_core (for sub-components).
-    pw_core* core() const { return core_; }
+  /// Get the pw_core (for sub-components).
+  [[nodiscard]] pw_core* core() const { return core_; }
 
-    /// Get the pw_registry (for sub-components).
-    pw_registry* registry() const { return registry_pw_; }
+  /// Get the pw_registry (for sub-components).
+  [[nodiscard]] pw_registry* registry() const { return registry_pw_; }
 
-    /// Drain the command queue (called on PW thread each loop iteration).
-    /// Public because it's called from the static pw_loop event callback.
-    void drain_commands();
+  /// Drain the command queue (called on PW thread each loop iteration).
+  /// Public because it's called from the static pw_loop event callback.
+  void drain_commands();
 
-private:
-    /// The PipeWire event loop function (runs on the jthread).
-    void loop_func(std::stop_token stop_token);
+ private:
+  /// The PipeWire event loop function (runs on the jthread).
+  void loop_func(const std::stop_token& stop_token);
 
+  /// Process a single command (called on PW thread).
+  void process_command(Command& cmd);
 
-    /// Process a single command (called on PW thread).
-    void process_command(Command& cmd);
+  int64_t dart_send_port_;
+  std::atomic<bool> connected_{false};
 
-    int64_t dart_send_port_;
-    std::atomic<bool> connected_{false};
+  // PipeWire objects (owned, destroyed in disconnect)
+  pw_main_loop* loop_{nullptr};
+  pw_context* context_{nullptr};
+  pw_core* core_{nullptr};
+  pw_registry* registry_pw_{nullptr};
 
-    // PipeWire objects (owned, destroyed in disconnect)
-    pw_main_loop* loop_{nullptr};
-    pw_context* context_{nullptr};
-    pw_core* core_{nullptr};
-    pw_registry* registry_pw_{nullptr};
+  // SPA hooks for core/registry listeners
+  std::unique_ptr<spa_hook> core_listener_;
+  std::unique_ptr<spa_hook> registry_listener_;
 
-    // SPA hooks for core/registry listeners
-    std::unique_ptr<spa_hook> core_listener_;
-    std::unique_ptr<spa_hook> registry_listener_;
+  // Sub-components
+  std::unique_ptr<RegistryMonitor> registry_;
+  std::unique_ptr<ParamHandler> params_;
+  std::unique_ptr<LinkManager> links_;
 
-    // Sub-components
-    std::unique_ptr<RegistryMonitor> registry_;
-    std::unique_ptr<ParamHandler> params_;
-    std::unique_ptr<LinkManager> links_;
+  // Threading
+  CommandQueue cmd_queue_;
+  std::jthread loop_thread_;
+  std::mutex snapshot_mutex_;  // Protects snapshot reads from non-PW threads
 
-    // Threading
-    CommandQueue cmd_queue_;
-    std::jthread loop_thread_;
-    std::mutex snapshot_mutex_;  // Protects snapshot reads from non-PW threads
+  // Loop event source for waking the PW thread when commands arrive
+  // (platform-specific, initialized in connect())
+  void* loop_event_source_{nullptr};
 
-    // Loop event source for waking the PW thread when commands arrive
-    // (platform-specific, initialized in connect())
-    void* loop_event_source_{nullptr};
+  // Initial-sync state: pw_core_sync seq we're waiting for during connect.
+  int sync_seq_{0};
+  bool sync_done_{false};
 
-    // Initial-sync state: pw_core_sync seq we're waiting for during connect.
-    int sync_seq_{0};
-    bool sync_done_{false};
-
-public:
-    // Called by the static core 'done' callback.
-    void on_core_done_event(uint32_t id, int seq);
+ public:
+  // Called by the static core 'done' callback.
+  void on_core_done_event(uint32_t id, int seq);
 };
 
 }  // namespace pw_dart
-

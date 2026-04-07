@@ -1,2 +1,6 @@
 include: package:lints/recommended.yaml
 
+analyzer:
+  exclude:
+    # Flutter sub-package; analyzed separately with `flutter analyze`.
+    - example/graph_viewer/**

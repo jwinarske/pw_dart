@@ -21,6 +21,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glaze)
 
+# Capture glaze's include dirs so we can re-add them as SYSTEM on
+# pw_dart_native below. glaze::glaze is an ALIAS target, so we can't
+# set properties on it directly; INTERFACE_INCLUDE_DIRECTORIES on the
+# alias still resolves through to the underlying target.
+get_target_property(GLAZE_INCLUDE_DIRS glaze::glaze INTERFACE_INCLUDE_DIRECTORIES)
+
 # --- Source files ---
 set(PW_DART_SOURCES
     pw_dart_native.cpp
@@ -49,7 +55,9 @@ add_library(pw_dart_native SHARED ${PW_DART_SOURCES})
 
 target_include_directories(pw_dart_native
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-    SYSTEM PRIVATE ${PIPEWIRE_INCLUDE_DIRS}
+    SYSTEM PRIVATE
+        ${PIPEWIRE_INCLUDE_DIRS}
+        ${GLAZE_INCLUDE_DIRS}
 )
 
 target_link_libraries(pw_dart_native
