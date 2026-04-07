@@ -32,7 +32,7 @@ TEST(SpscQueueTest, PopFromEmpty) {
 
 TEST(SpscQueueTest, PushUntilFull) {
     SpscQueue<int, 4> q;  // capacity = 3 (N-1)
-    EXPECT_EQ(SpscQueue<int, 4>::capacity(), 3u);
+    EXPECT_EQ((SpscQueue<int, 4>::capacity()), 3u);
 
     EXPECT_TRUE(q.try_push(1));
     EXPECT_TRUE(q.try_push(2));
