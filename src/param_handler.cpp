@@ -18,6 +18,21 @@
 
 namespace pw_dart {
 
+struct ParamUpdate {
+    std::string key;
+    std::string value;
+};
+
+}  // namespace pw_dart
+
+template <>
+struct glz::meta<pw_dart::ParamUpdate> {
+    using T = pw_dart::ParamUpdate;
+    static constexpr auto value = glz::object("key", &T::key, "value", &T::value);
+};
+
+namespace pw_dart {
+
 ParamHandler::ParamHandler(PwDartClientImpl* client)
     : client_(client) {}
 
@@ -47,12 +62,6 @@ void ParamHandler::enum_params(uint32_t node_id) {
 
 int32_t ParamHandler::set_param(uint32_t node_id, const std::string& param_json) {
     if (!client_) return -1;
-
-    // Parse the JSON to extract key and value
-    struct ParamUpdate {
-        std::string key;
-        std::string value;
-    };
 
     ParamUpdate update;
     auto ec = glz::read_json(update, param_json);
@@ -115,18 +124,4 @@ void ParamHandler::clear_cache(uint32_t node_id) {
 }
 
 }  // namespace pw_dart
-
-// Glaze reflection for ParamUpdate (used in set_param JSON parsing)
-namespace pw_dart {
-struct ParamUpdate {
-    std::string key;
-    std::string value;
-};
-}
-
-template <>
-struct glz::meta<pw_dart::ParamUpdate> {
-    using T = pw_dart::ParamUpdate;
-    static constexpr auto value = object("key", &T::key, "value", &T::value);
-};
 

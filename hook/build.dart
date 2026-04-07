@@ -8,6 +8,12 @@ import 'dart:io';
 // This build hook is invoked by `native_assets_cli` during `dart run` / `flutter build`.
 // It compiles the C++23 native library using CMake.
 void main(List<String> args) async {
+  // Skip native build if environment variable is set (for Dart-only tests)
+  if (Platform.environment.containsKey('SKIP_NATIVE_BUILD')) {
+    stdout.writeln('SKIP_NATIVE_BUILD set — skipping native build.');
+    return;
+  }
+
   final packageRoot = Directory.current.path;
   final srcDir = '$packageRoot/src';
   final buildDir = '$packageRoot/src/build';

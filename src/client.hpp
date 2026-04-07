@@ -98,12 +98,14 @@ public:
     /// Get the pw_registry (for sub-components).
     pw_registry* registry() const { return registry_pw_; }
 
+    /// Drain the command queue (called on PW thread each loop iteration).
+    /// Public because it's called from the static pw_loop event callback.
+    void drain_commands();
+
 private:
     /// The PipeWire event loop function (runs on the jthread).
     void loop_func(std::stop_token stop_token);
 
-    /// Drain the command queue (called on PW thread each loop iteration).
-    void drain_commands();
 
     /// Process a single command (called on PW thread).
     void process_command(Command& cmd);

@@ -17,11 +17,23 @@ import 'serialization.dart';
 /// operations go through this class, which can be replaced with a
 /// [MockPwNativeBridge] in tests.
 class PwNativeBridge {
-  final PwDartNativeBindings _bindings;
+  late final PwDartNativeBindings _bindings;
   Pointer<Void>? _clientHandle;
 
-  PwNativeBridge({PwDartNativeBindings? bindings})
-      : _bindings = bindings ?? PwDartNativeBindings();
+  PwNativeBridge({PwDartNativeBindings? bindings}) {
+    if (bindings != null) {
+      _bindings = bindings;
+    }
+    // If null, _bindings is initialized lazily on first use.
+    // Subclasses (mocks) that override all methods never touch _bindings.
+  }
+
+  /// Create a bridge with explicit bindings (for production use).
+  PwNativeBridge.withBindings(PwDartNativeBindings bindings)
+      : _bindings = bindings;
+
+  /// Protected constructor for subclasses (mocks) that don't need bindings.
+  PwNativeBridge.forTesting();
 
   /// Whether we have an active native client handle.
   bool get isConnected => _clientHandle != null && _clientHandle != nullptr;
